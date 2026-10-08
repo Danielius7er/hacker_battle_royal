@@ -1,8 +1,9 @@
 {
-  "name": "snake-game",
+  "name": "hacker-apocalypse-arena",
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "node server.js",
     "dev": "node server.js",
     "test": "node test/game.test.js"
   }

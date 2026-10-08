@@ -60,5 +60,5 @@ server.on("error", (error) => {
 server.listen(port, () => {
   const address = server.address();
   const actualPort = typeof address === "object" && address ? address.port : port;
-  console.log(`Snake game server running at http://localhost:${actualPort}`);
+  console.log(`Hacker apocalypse arena running at http://localhost:${actualPort}`);
 });

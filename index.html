@@ -1,46 +1,115 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Snake</title>
+    <title>SAWAD | Home</title>
+    <meta name="description" content="SAWAD Angola - plataforma de aluguer, venda e gestão de carros." />
     <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
-    <main class="app">
-      <section class="panel" aria-labelledby="title">
-        <div class="header">
+  <body data-page="home">
+    <div class="site-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">S</span>
           <div>
-            <p class="eyebrow">Classic Snake</p>
-            <h1 id="title">Snake</h1>
-            <p id="mode" class="mode" aria-live="polite">Ready</p>
+            <p class="brand-name">SAWAD</p>
+            <p class="brand-tag" data-i18n="homeHeroEyebrow">SAWAD Angola</p>
           </div>
-          <button id="restart" type="button">Restart</button>
         </div>
 
-        <div class="hud" aria-live="polite">
-          <p>Score: <span id="score">0</span></p>
-          <p id="status">Use arrow keys or WASD to start.</p>
-        </div>
+        <nav class="topnav">
+          <a href="./cars.html" data-i18n="homeNavCars">Cars</a>
+          <a href="./admin.html" data-i18n="homeNavAdmin">Admin</a>
+          <a href="#contact" data-i18n="homeNavContact">Contact</a>
+        </nav>
 
-        <div class="board-wrap">
-          <div id="board" class="board" role="grid" aria-label="Snake game board"></div>
+        <div class="language-switcher">
+          <label class="sr-only" for="language-select" data-i18n="sortLabel">Sort</label>
+          <select id="language-select">
+            <option value="pt">Português</option>
+            <option value="en">English</option>
+            <option value="zh">中文</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="kmb">Kimbundu</option>
+            <option value="kg">Kikongo</option>
+            <option value="umb">Umbundu</option>
+            <option value="ar">العربية</option>
+          </select>
         </div>
+      </header>
 
-        <div class="controls" aria-label="Touch controls">
-          <button type="button" data-direction="up" aria-label="Move up">Up</button>
-          <button type="button" class="ghost" aria-hidden="true" tabindex="-1"></button>
-          <button type="button" class="ghost" aria-hidden="true" tabindex="-1"></button>
-          <button type="button" data-direction="left" aria-label="Move left">Left</button>
-          <button type="button" class="ghost" aria-hidden="true" tabindex="-1"></button>
-          <button type="button" data-direction="right" aria-label="Move right">Right</button>
-          <button type="button" class="ghost" aria-hidden="true" tabindex="-1"></button>
-          <button type="button" data-direction="down" aria-label="Move down">Down</button>
-          <button type="button" class="ghost" aria-hidden="true" tabindex="-1"></button>
-        </div>
-      </section>
-    </main>
+      <main>
+        <section class="hero" aria-labelledby="home-title">
+          <div class="hero-copy">
+            <p class="eyebrow" data-i18n="homeHeroEyebrow">SAWAD Angola</p>
+            <h1 id="home-title" data-i18n="homeHeroTitle">Gestão de aluguer e venda de carros</h1>
+            <p class="hero-text" data-i18n="homeHeroText">
+              Uma plataforma limpa para catálogo de carros, pedidos de motorista e gestão administrativa com imagem real dos veículos.
+            </p>
+            <div class="hero-actions">
+              <a class="button primary" href="./cars.html" data-i18n="homeHeroCars">Ver carros</a>
+              <a class="button secondary" href="./admin.html" data-i18n="homeHeroAdmin">Abrir admin</a>
+            </div>
+          </div>
 
-    <script type="module" src="./src/main.js"></script>
+          <aside class="hero-panel">
+            <div class="hero-metric">
+              <span data-i18n="homeFeatureOneTitle">Catálogo organizado</span>
+              <strong>08</strong>
+            </div>
+            <div class="hero-note" data-i18n="homeFeatureOneText">Carros com imagem, detalhes e botões para reservar ou ver mais informação.</div>
+            <div class="hero-note" data-i18n="homeFeatureTwoText">Pedido para cliente individual ou empresa com campos específicos.</div>
+            <div class="hero-note" data-i18n="homeFeatureThreeText">Adicionar, editar e organizar carros com uploads reais de imagem.</div>
+          </aside>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow" data-i18n="pageCarsEyebrow">Catálogo completo</p>
+              <h2 data-i18n="pageCarsTitle">Todos os carros disponíveis</h2>
+            </div>
+            <p class="section-description" data-i18n="pageCarsText">
+              Use a pesquisa e os filtros para encontrar rapidamente o carro certo.
+            </p>
+          </div>
+          <div class="home-cta-grid">
+            <a class="quick-card" href="./cars.html">
+              <span class="quick-label" data-i18n="homeHeroCars">Ver carros</span>
+              <strong data-i18n="homeFeatureOneTitle">Catálogo organizado</strong>
+            </a>
+            <a class="quick-card" href="./admin.html">
+              <span class="quick-label" data-i18n="homeHeroAdmin">Abrir admin</span>
+              <strong data-i18n="homeFeatureThreeTitle">Gestão admin</strong>
+            </a>
+          </div>
+        </section>
+
+        <section class="section contact-strip" id="contact">
+          <div>
+            <p class="eyebrow">Contacto</p>
+            <h2>SAWAD</h2>
+          </div>
+          <div class="contact-grid">
+            <div>
+              <span>Telefone</span>
+              <strong>+244 923 000 000</strong>
+            </div>
+            <div>
+              <span>Email</span>
+              <strong>reservas@sawad.ao</strong>
+            </div>
+            <div>
+              <span>Luanda</span>
+              <strong>Angola</strong>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="./home.js"></script>
   </body>
 </html>

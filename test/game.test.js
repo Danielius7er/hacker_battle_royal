@@ -1,5 +1,15 @@
 import assert from "node:assert/strict";
-import { applyDirection, createGame, spawnFood, stepGame } from "../src/game.js";
+import {
+  BOARD_SIZE,
+  MAX_ROUNDS,
+  ROUND_TICKS,
+  applyDirection,
+  createGame,
+  setControlledFighter,
+  spawnLoot,
+  stepGame,
+  useSpecial
+} from "../src/game.js";
 
 function makeRandom(sequence) {
   let index = 0;
@@ -16,80 +26,123 @@ function test(name, fn) {
   cases.push({ name, fn });
 }
 
-test("snake moves one step to the right by default", () => {
+test("creates four named fighters with a controllable champion", () => {
   const state = createGame(() => 0);
-  const next = stepGame(state);
 
-  assert.equal(next.snake[0].x, state.snake[0].x + 1);
-  assert.equal(next.snake[0].y, state.snake[0].y);
+  assert.equal(state.boardSize, BOARD_SIZE);
+  assert.equal(state.fighters.length, 4);
+  assert.equal(state.fighters.filter((fighter) => fighter.isPlayer).length, 1);
+  assert.equal(state.controlledId, "angry-computer");
 });
 
-test("direction changes follow keyboard input and reject reversals", () => {
+test("direction input queues movement for the controlled fighter", () => {
   const state = createGame(() => 0);
-  const afterUp = applyDirection(state, "ArrowUp");
-  assert.equal(afterUp.nextDirection, "up");
+  const next = applyDirection(state, "ArrowUp");
 
-  const blocked = applyDirection(afterUp, "ArrowDown");
-  assert.equal(blocked.nextDirection, "up");
+  assert.equal(next.queuedDirection, "up");
+  assert.equal(next.status, "playing");
 });
 
-test("snake grows and score increases after eating food", () => {
+test("champion selection changes who is under player control", () => {
   const state = createGame(() => 0);
-  const head = state.snake[0];
-  const eatingState = {
+  const next = setControlledFighter(state, "medley-printer");
+
+  assert.equal(next.controlledId, "medley-printer");
+  assert.equal(next.fighters.find((fighter) => fighter.id === "medley-printer").isPlayer, true);
+  assert.equal(next.fighters.find((fighter) => fighter.id === "angry-computer").isPlayer, false);
+});
+
+test("special moves have character-specific effects", () => {
+  const state = createGame(() => 0);
+  const boosted = useSpecial({
     ...state,
-    food: { x: head.x + 1, y: head.y },
-    random: () => 0
-  };
+    fighters: state.fighters.map((fighter) => ({
+      ...fighter,
+      cooldown: 0
+    }))
+  }, "supa-tablet");
 
-  const next = stepGame(eatingState);
-  assert.equal(next.score, 1);
-  assert.equal(next.snake.length, state.snake.length + 1);
-  assert.notDeepEqual(next.food, next.snake[0]);
+  const tablet = boosted.fighters.find((fighter) => fighter.id === "supa-tablet");
+  assert.equal(tablet.hp, tablet.maxHp);
+  assert.equal(tablet.shield > 0, true);
+  assert.equal(tablet.cooldown, tablet.specialCooldown);
 });
 
-test("wall collision ends the game", () => {
-  const state = {
-    ...createGame(() => 0),
-    snake: [{ x: 0, y: 0 }],
-    direction: "left",
-    nextDirection: "left",
-    food: { x: 10, y: 10 }
-  };
-
-  const next = stepGame(state);
-  assert.equal(next.gameOver, true);
-  assert.equal(next.status, "game over");
-});
-
-test("self collision ends the game", () => {
-  const state = {
-    ...createGame(() => 0),
-    snake: [
-      { x: 5, y: 5 },
-      { x: 6, y: 5 },
-      { x: 6, y: 6 },
-      { x: 5, y: 6 }
-    ],
-    direction: "right",
-    nextDirection: "right",
-    food: { x: 10, y: 10 }
-  };
-
-  const next = stepGame(state);
-  assert.equal(next.gameOver, true);
-});
-
-test("food spawns only in empty cells", () => {
-  const snake = [
-    { x: 0, y: 0 },
-    { x: 1, y: 0 },
-    { x: 2, y: 0 }
+test("loot spawns only on open cells inside the safe zone", () => {
+  const fighters = [
+    { x: 2, y: 2, alive: true },
+    { x: 3, y: 2, alive: true }
   ];
-  const food = spawnFood(snake, 3, makeRandom([0]));
 
-  assert.ok(food);
-  assert.equal(snake.some((segment) => segment.x === food.x && segment.y === food.y), false);
+  const loot = spawnLoot(fighters, 5, makeRandom([0]), 0);
+
+  assert.ok(loot);
+  assert.equal(fighters.some((fighter) => fighter.x === loot.x && fighter.y === loot.y), false);
+});
+
+test("rounds advance and the final round produces a score winner", () => {
+  let state = createGame(makeRandom([0, 0, 0, 0]));
+  state = {
+    ...state,
+    round: MAX_ROUNDS,
+    roundTick: ROUND_TICKS - 1,
+    fighters: [
+      {
+        ...state.fighters[0],
+        x: 5,
+        y: 5,
+        hp: 10,
+        attack: 3,
+        speed: 3,
+        cooldown: 0,
+        score: 7,
+        kills: 1,
+        isPlayer: true
+      },
+      {
+        ...state.fighters[1],
+        x: 6,
+        y: 5,
+        hp: 0,
+        attack: 1,
+        speed: 1,
+        alive: false,
+        score: 4,
+        kills: 0
+      },
+      {
+        ...state.fighters[2],
+        x: 10,
+        y: 10,
+        hp: 0,
+        attack: 1,
+        speed: 1,
+        alive: false,
+        score: 3,
+        kills: 0
+      },
+      {
+        ...state.fighters[3],
+        x: 12,
+        y: 12,
+        hp: 0,
+        attack: 1,
+        speed: 1,
+        alive: false,
+        score: 2,
+        kills: 0
+      }
+    ],
+    loot: null,
+    controlledId: "angry-computer",
+    queuedDirection: "right"
+  };
+
+  state = stepGame(state);
+
+  assert.equal(state.gameOver, true);
+  assert.equal(state.winnerName, "Angry Computer");
+  assert.ok(state.winnerSummary.length > 0);
 });
 
 let failed = 0;
